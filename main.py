@@ -1,3 +1,5 @@
+"""Módulo principal para a API de itens, usando FastAPI."""
+
 import fastapi
 import uvicorn
 from pydantic import BaseModel
