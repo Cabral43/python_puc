@@ -1,0 +1,18 @@
+name: continuousdelivery.yml
+on:
+  push:
+    branches:
+      - main
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: simulando continuous delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: projetozipado..zip
+          path:
+            main.py
