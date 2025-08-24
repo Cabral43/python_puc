@@ -13,6 +13,17 @@ jobs:
       - name: simulando continuous delivery
         uses: actions/upload-artifact@v4
         with:
-          name: projetozipado..zip
+          name: projetozipado.zip
           path:
             main.py
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: delivery
+    steps:
+        - uses: actions/download-artifact@v4
+          with:
+            name: projetozipado.zip
+
+        - name: Display structure of downloaded artifact
+          run: ls -R
