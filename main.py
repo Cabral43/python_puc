@@ -7,6 +7,7 @@ from pydantic import BaseModel
 app = fastapi.FastAPI()
 
 class Item(BaseModel):
+    """Modelo de dados para um item."""
     name: str
     price: float
 
