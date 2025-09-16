@@ -1,3 +1,5 @@
+"""Testes unitários para os endpoints da API principal."""
+
 from fastapi.testclient import TestClient
 from src.main import app
 

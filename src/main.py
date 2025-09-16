@@ -1,3 +1,5 @@
+"""Módulo principal da API que define os endpoints."""
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 
