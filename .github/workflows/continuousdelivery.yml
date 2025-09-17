@@ -16,8 +16,9 @@ jobs:
     steps:
       - name: Enviar notificação de PR aberto para o Discord
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           args: |
             📬 **Nova Pull Request Aberta**
             **Título**: ${{ github.event.pull_request.title }}
@@ -56,8 +57,9 @@ jobs:
       - name: Discord notification on success
         if: success()
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           args: |
             ✅ **Deploy Concluído com Sucesso**
             **Commit**: ${{ github.event.head_commit.message }}
@@ -67,8 +69,9 @@ jobs:
       - name: Discord notification on failure
         if: failure()
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           args: |
             ❌ **Falha no Deploy**
             **Commit**: ${{ github.event.head_commit.message }}
