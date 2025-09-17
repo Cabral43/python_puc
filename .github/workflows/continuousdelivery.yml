@@ -15,7 +15,7 @@ jobs:
         with:
           name: projetozipado.zip
           path:
-            main.py
+            src/main.py
 
   deploy:
     runs-on: ubuntu-latest
