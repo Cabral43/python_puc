@@ -28,12 +28,33 @@ jobs:
         - name: Display structure of downloaded artifact
           run: ls -R
 
-  discord:
+  discord_deploy_status:
     runs-on: ubuntu-latest
+    needs: deploy
+    if: always() && github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Run Discord Webhook
-        uses: johnnyhuy/actions-discord-git-webhook@main
+      - name: Discord notification on success
+        if: success()
+        uses: ts-pr-discord-webhook/action@v2
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: '✅ Deploy Concluído com Sucesso'
+          color: '3066993'
+          description: |
+            O deploy na branch **main** foi bem-sucedido.
+            **Commit**: `${{ github.event.head_commit.message }}`
+            **Autor**: `${{ github.actor }}`
+            [Ver detalhes da execução](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Discord notification on failure
+        if: failure()
+        uses: ts-pr-discord-webhook/action@v2
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: '❌ Falha no Deploy'
+          color: '15158332'
+          description: |
+            Ocorreu um erro durante o deploy na branch **main**.
+            **Commit**: `${{ github.event.head_commit.message }}`
+            **Autor**: `${{ github.actor }}`
+            [Ver detalhes da execução](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
