@@ -15,17 +15,15 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Enviar notificação de PR aberto para o Discord
-        uses: sarvex/action-discord@v1
+        uses: Ilshidur/action-discord@master
         with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-          title: '📬 Nova Pull Request Aberta'
-          color: '16776960'
-          description: |
-            Uma nova PR está pronta para revisão.
-            **Título**: `${{ github.event.pull_request.title }}`
-            **Autor**: `${{ github.actor }}`
-            **Branch de Origem**: `${{ github.head_ref }}`
-            [Clique aqui para revisar a Pull Request](${{ github.event.pull_request.html_url }})
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          args: |
+            📬 **Nova Pull Request Aberta**
+            **Título**: ${{ github.event.pull_request.title }}
+            **Autor**: ${{ github.actor }}
+            **Branch de Origem**: ${{ github.head_ref }}
+            👉 [Clique aqui para revisar a Pull Request](${{ github.event.pull_request.html_url }})
 
   delivery:
     runs-on: ubuntu-latest
@@ -44,11 +42,11 @@ jobs:
     needs: delivery
     if: github.event_name == 'push'
     steps:
-        - uses: actions/download-artifact@v4
-          with:
-            name: projetozipado.zip
-        - name: Display structure of downloaded artifact
-          run: ls -R
+      - uses: actions/download-artifact@v4
+        with:
+          name: projetozipado.zip
+      - name: Display structure of downloaded artifact
+        run: ls -R
 
   discord_deploy_status:
     runs-on: ubuntu-latest
@@ -57,26 +55,22 @@ jobs:
     steps:
       - name: Discord notification on success
         if: success()
-        uses: sarvex/action-discord@v1
+        uses: Ilshidur/action-discord@master
         with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-          title: '✅ Deploy Concluído com Sucesso'
-          color: '3066993'
-          description: |
-            O deploy na branch **main** foi bem-sucedido.
-            **Commit**: `${{ github.event.head_commit.message }}`
-            **Autor**: `${{ github.actor }}`
-            [Ver detalhes da execução](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          args: |
+            ✅ **Deploy Concluído com Sucesso**
+            **Commit**: ${{ github.event.head_commit.message }}
+            **Autor**: ${{ github.actor }}
+            👉 [Ver detalhes da execução](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
       - name: Discord notification on failure
         if: failure()
-        uses: sarvex/action-discord@v1
+        uses: Ilshidur/action-discord@master
         with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-          title: '❌ Falha no Deploy'
-          color: '15158332'
-          description: |
-            Ocorreu um erro durante o deploy na branch **main**.
-            **Commit**: `${{ github.event.head_commit.message }}`
-            **Autor**: `${{ github.actor }}`
-            [Ver detalhes da execução](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          args: |
+            ❌ **Falha no Deploy**
+            **Commit**: ${{ github.event.head_commit.message }}
+            **Autor**: ${{ github.actor }}
+            👉 [Ver detalhes da execução](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
