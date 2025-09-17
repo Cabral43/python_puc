@@ -1,16 +1,39 @@
-name: continuousdelivery.yml
+name: CI/CD e Notificações
+
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
 jobs:
+  pr_opened_notification:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Enviar notificação de PR aberto para o Discord
+        uses: sarvex/action-discord@v1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: '📬 Nova Pull Request Aberta'
+          color: '16776960'
+          description: |
+            Uma nova PR está pronta para revisão.
+            **Título**: `${{ github.event.pull_request.title }}`
+            **Autor**: `${{ github.actor }}`
+            **Branch de Origem**: `${{ github.head_ref }}`
+            [Clique aqui para revisar a Pull Request](${{ github.event.pull_request.html_url }})
+
   delivery:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
-
-      - name: simulando continuous delivery
+      - name: Crio o artefato
         uses: actions/upload-artifact@v4
         with:
           name: projetozipado.zip
@@ -19,22 +42,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: delivery
+    if: github.event_name == 'push'
     steps:
         - uses: actions/download-artifact@v4
           with:
             name: projetozipado.zip
-
         - name: Display structure of downloaded artifact
           run: ls -R
 
   discord_deploy_status:
     runs-on: ubuntu-latest
-    needs: [deploy]
+    needs: deploy
     if: always() && github.event_name == 'push'
     steps:
       - name: Discord notification on success
         if: success()
-        uses: ts-pr-discord-webhook/action@v2
+        uses: sarvex/action-discord@v1
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: '✅ Deploy Concluído com Sucesso'
@@ -47,7 +70,7 @@ jobs:
 
       - name: Discord notification on failure
         if: failure()
-        uses: ts-pr-discord-webhook/action@v2
+        uses: sarvex/action-discord@v1
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: '❌ Falha no Deploy'
